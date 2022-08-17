@@ -1,0 +1,10 @@
+version = 1
+
+test_patterns = [
+  "msbuild/src/Framework.UnitTests/**/*.cs",
+  "msbuild/src/Utilities.UnitTests/**/*.cs"
+]
+
+[[analyzers]]
+name = "csharp"
+enabled = true
