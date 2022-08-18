@@ -6,7 +6,7 @@ test_patterns = [
 ]
 
 exclude_patterns = [
-  "src/MSBuild.Bootstrap/**/*.cs"
+  "src/Tasks/**/*.cs"
 ]
 
 [[analyzers]]
