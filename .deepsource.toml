@@ -5,6 +5,10 @@ test_patterns = [
   "/src/Utilities.UnitTests/**/*.cs"
 ]
 
+exclude_patterns = [
+  "src/MSBuild.Bootstrap/**/*.cs"
+]
+
 [[analyzers]]
 name = "csharp"
 enabled = true
