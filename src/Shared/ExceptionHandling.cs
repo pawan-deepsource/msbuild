@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #nullable disable
@@ -94,11 +94,7 @@ namespace Microsoft.Build.Shared
                 return true;
             }
 
-#if !CLR2COMPATIBILITY
-            // Check if any critical exceptions
-            var aggregateException = e as AggregateException;
-
-            if (aggregateException != null)
+            if (e is AggregateException aggregateException)
             {
                 // If the aggregate exception contains a critical exception it is considered a critical exception
                 if (aggregateException.InnerExceptions.Any(innerException => IsCriticalException(innerException)))
@@ -163,17 +159,14 @@ namespace Microsoft.Build.Shared
         {
             var line = 0;
             var column = 0;
-
-            var xmlException = e as XmlException;
-            if (xmlException != null)
+            if (e is XmlException xmlException)
             {
                 line = xmlException.LineNumber;
                 column = xmlException.LinePosition;
             }
             else
             {
-                var schemaException = e as XmlSchemaException;
-                if (schemaException != null)
+                if (e is XmlSchemaException schemaException)
                 {
                     line = schemaException.LineNumber;
                     column = schemaException.LinePosition;

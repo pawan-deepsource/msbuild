@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -253,15 +253,12 @@ namespace Microsoft.Build.BackEnd
             // Add parameters on any output tags
             foreach (ProjectTaskInstanceChild taskOutputSpecification in _taskNode.Outputs)
             {
-                ProjectTaskOutputItemInstance outputItemInstance = taskOutputSpecification as ProjectTaskOutputItemInstance;
-                if (outputItemInstance != null)
+                if (taskOutputSpecification is ProjectTaskOutputItemInstance outputItemInstance)
                 {
                     taskParameters.Add(outputItemInstance.TaskParameter);
                     taskParameters.Add(outputItemInstance.ItemType);
                 }
-
-                ProjectTaskOutputPropertyInstance outputPropertyInstance = taskOutputSpecification as ProjectTaskOutputPropertyInstance;
-                if (outputPropertyInstance != null)
+                if (taskOutputSpecification is ProjectTaskOutputPropertyInstance outputPropertyInstance)
                 {
                     taskParameters.Add(outputPropertyInstance.TaskParameter);
                     taskParameters.Add(outputPropertyInstance.PropertyName);
@@ -1103,10 +1100,7 @@ namespace Microsoft.Build.BackEnd
                     bool outputTargetIsItem = false;
                     string outputTargetName = null;
 
-                    // check where the outputs are going -- into a vector, or a property?
-                    ProjectTaskOutputItemInstance taskOutputItemInstance = taskOutputSpecification as ProjectTaskOutputItemInstance;
-
-                    if (taskOutputItemInstance != null)
+                    if (taskOutputSpecification is ProjectTaskOutputItemInstance taskOutputItemInstance)
                     {
                         // expand all embedded properties, item metadata and item vectors in the item type name
                         outputTargetIsItem = true;
@@ -1206,8 +1200,7 @@ namespace Microsoft.Build.BackEnd
 
             if (taskParameterAttribute != null)
             {
-                ProjectTaskOutputItemInstance taskItemInstance = taskOutputSpecification as ProjectTaskOutputItemInstance;
-                if (taskItemInstance != null)
+                if (taskOutputSpecification is ProjectTaskOutputItemInstance taskItemInstance)
                 {
                     // This is an output item.
                     // Expand only with properties first, so that expressions like Include="@(foo)" will transfer the metadata of the "foo" items as well, not just their item specs.

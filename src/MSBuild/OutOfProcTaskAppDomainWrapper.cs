@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -32,9 +32,7 @@ namespace Microsoft.Build.CommandLine
             {
                 return true;
             }
-
-            ICancelableTask cancelableTask = wrappedTask as ICancelableTask;
-            if (cancelableTask != null)
+            if (wrappedTask is ICancelableTask cancelableTask)
             {
                 cancelableTask.Cancel();
                 return true;

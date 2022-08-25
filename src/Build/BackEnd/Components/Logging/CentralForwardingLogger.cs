@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Build.Framework;
@@ -80,9 +80,7 @@ namespace Microsoft.Build.BackEnd.Logging
         {
             ErrorUtilities.VerifyThrow(eventSource != null, "eventSource is null");
             eventSource.AnyEventRaised += EventSource_AnyEventRaised;
-
-            IEventSource2 eventSource2 = eventSource as IEventSource2;
-            if (eventSource2 != null)
+            if (eventSource is IEventSource2 eventSource2)
             {
                 // Telemetry events aren't part of "all" so they need to be forwarded separately
                 eventSource2.TelemetryLogged += EventSource_AnyEventRaised;

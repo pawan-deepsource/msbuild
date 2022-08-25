@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -581,8 +581,7 @@ namespace Microsoft.Build.Tasks.Deployment.ManifestUtilities
                 }
                 if (FileSystems.Default.FileExists(manifestPath))
                 {
-                    ApplicationManifest entryPointManifest = ManifestReader.ReadManifest(manifestPath, false) as ApplicationManifest;
-                    if (entryPointManifest != null)
+                    if (ManifestReader.ReadManifest(manifestPath, false)is ApplicationManifest entryPointManifest)
                     {
                         if (Install)
                         {

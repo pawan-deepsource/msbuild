@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -1440,8 +1440,7 @@ namespace Microsoft.Build.Execution
                                 bool initialized = false;
                                 try
                                 {
-                                    ITaskFactory2 factory2 = factory as ITaskFactory2;
-                                    if (factory2 != null)
+                                    if (factory is ITaskFactory2 factory2)
                                     {
                                         initialized = factory2.Initialize(RegisteredName, TaskFactoryParameters, ParameterGroupAndTaskBody.UsingTaskParameters, ParameterGroupAndTaskBody.InlineTaskXmlBody, taskFactoryLoggingHost);
                                     }

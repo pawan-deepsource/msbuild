@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -697,8 +697,7 @@ namespace Microsoft.Build.BackEnd
             {
                 if (obj != null)
                 {
-                    BlockingRequestKey other = obj as BlockingRequestKey;
-                    if (other != null)
+                    if (obj is BlockingRequestKey other)
                     {
                         return (other._globalRequestId == _globalRequestId) && (other._nodeRequestId == _nodeRequestId);
                     }
