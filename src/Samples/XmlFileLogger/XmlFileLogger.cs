@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -124,9 +124,7 @@ namespace Microsoft.Build.Logging.StructuredLogger
             }
             else
             {
-                // This was command line arguments for processEvent task
-                var args = messageArgs as TaskCommandLineEventArgs;
-                if (args != null)
+                if (messageArgs is TaskCommandLineEventArgs args)
                 {
                     _build.AddCommandLine(args);
                     return;

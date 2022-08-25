@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -186,9 +186,7 @@ namespace Microsoft.Build.Execution
         {
             ErrorUtilities.VerifyThrowArgumentNull(task, nameof(task));
             ErrorUtilities.VerifyThrowArgumentNull(property, nameof(property));
-
-            IGeneratedTask generatedTask = task as IGeneratedTask;
-            if (generatedTask != null)
+            if (task is IGeneratedTask generatedTask)
             {
                 generatedTask.SetPropertyValue(property, value);
             }
@@ -206,16 +204,13 @@ namespace Microsoft.Build.Execution
         {
             ErrorUtilities.VerifyThrowArgumentNull(task, nameof(task));
             ErrorUtilities.VerifyThrowArgumentNull(property, nameof(property));
-
-            IGeneratedTask generatedTask = task as IGeneratedTask;
-            if (generatedTask != null)
+            if (task is IGeneratedTask generatedTask)
             {
                 return generatedTask.GetPropertyValue(property);
             }
             else
             {
-                ReflectableTaskPropertyInfo propertyInfo = property as ReflectableTaskPropertyInfo;
-                if (propertyInfo != null)
+                if (property is ReflectableTaskPropertyInfo propertyInfo)
                 {
                     return propertyInfo.Reflection.GetValue(task, null);
                 }

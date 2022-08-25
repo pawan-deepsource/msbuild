@@ -648,8 +648,7 @@ namespace Microsoft.Build.BuildEngine
         #region Equality
         public override bool Equals(object obj)
         {
-            ProjectFullKey compareKey = obj as ProjectFullKey;
-            if (compareKey != null)
+            if (obj is ProjectFullKey compareKey)
             {
                 return (compareKey.projectKey == this.projectKey) && (compareKey.entryPointKey == this.entryPointKey);
             }

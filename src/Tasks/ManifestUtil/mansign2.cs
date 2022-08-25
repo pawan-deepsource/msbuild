@@ -423,9 +423,7 @@ namespace System.Deployment.Internal.CodeSigning
 
             publisherIdentity.SetAttribute("name", signerCert.SubjectName.Name);
             publisherIdentity.SetAttribute("issuerKeyHash", issuerKeyHash);
-
-            XmlElement signature = manifestDom.SelectSingleNode("asm:assembly/ds:Signature", nsm) as XmlElement;
-            if (signature != null)
+            if (manifestDom.SelectSingleNode("asm:assembly/ds:Signature", nsm)is XmlElement signature)
             {
                 assembly.InsertBefore(publisherIdentity, signature);
             }

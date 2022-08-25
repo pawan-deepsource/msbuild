@@ -1371,9 +1371,7 @@ namespace Microsoft.Build.Execution
                     originalItemSpec = destinationItem.GetMetadata("OriginalItemSpec");
                 }
 
-                TaskItem destinationAsTaskItem = destinationItem as TaskItem;
-
-                if (destinationAsTaskItem != null && destinationAsTaskItem._directMetadata == null)
+                if (destinationItem is TaskItem destinationAsTaskItem&& destinationAsTaskItem._directMetadata == null)
                 {
                     ProjectInstance.VerifyThrowNotImmutable(destinationAsTaskItem._isImmutable);
 

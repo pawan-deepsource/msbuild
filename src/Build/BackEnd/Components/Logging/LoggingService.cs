@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -1226,8 +1226,7 @@ namespace Microsoft.Build.BackEnd.Logging
         {
             if (loggingPacket?.NodeBuildEvent != null && _componentHost != null)
             {
-                var projectStartedEventArgs = loggingPacket.NodeBuildEvent.Value.Value as ProjectStartedEventArgs;
-                if (projectStartedEventArgs != null && _configCache.Value != null)
+                if (loggingPacket.NodeBuildEvent.Value.Value is ProjectStartedEventArgs projectStartedEventArgs&& _configCache.Value != null)
                 {
                     ErrorUtilities.VerifyThrow(_configCache.Value.HasConfiguration(projectStartedEventArgs.ProjectId), "Cannot find the project configuration while injecting non-serialized data from out-of-proc node.");
                     BuildRequestConfiguration buildRequestConfiguration = _configCache.Value[projectStartedEventArgs.ProjectId];
@@ -1594,8 +1593,7 @@ namespace Microsoft.Build.BackEnd.Logging
         {
             try
             {
-                INodeLogger nodeLogger = logger as INodeLogger;
-                if (nodeLogger != null)
+                if (logger is INodeLogger nodeLogger)
                 {
                     nodeLogger.Initialize(sourceForLogger, _maxCPUCount);
                 }
@@ -1682,8 +1680,7 @@ namespace Microsoft.Build.BackEnd.Logging
 
             if (eventHandler != null)
             {
-                ProjectStartedEventArgs startedEventArgs = args as ProjectStartedEventArgs;
-                if (startedEventArgs != null)
+                if (args is ProjectStartedEventArgs startedEventArgs)
                 {
                     eventHandler(this, startedEventArgs);
                 }
@@ -1699,8 +1696,7 @@ namespace Microsoft.Build.BackEnd.Logging
 
             if (eventHandler != null)
             {
-                ProjectFinishedEventArgs finishedEventArgs = args as ProjectFinishedEventArgs;
-                if (finishedEventArgs != null)
+                if (args is ProjectFinishedEventArgs finishedEventArgs)
                 {
                     eventHandler(this, finishedEventArgs);
                 }

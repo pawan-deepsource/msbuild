@@ -443,9 +443,7 @@ namespace Microsoft.Build.BackEnd
             IDictionary wrappedMetadata;
             bool wrappedMetadataIsEscaped;
 
-            ITaskItem2 wrappedItemAsITaskItem2 = wrappedItem as ITaskItem2;
-
-            if (wrappedItemAsITaskItem2 != null)
+            if (wrappedItem is ITaskItem2 wrappedItemAsITaskItem2)
             {
                 escapedItemSpec = wrappedItemAsITaskItem2.EvaluatedIncludeEscaped;
                 escapedDefiningProject = wrappedItemAsITaskItem2.GetMetadataValueEscaped(FileUtilities.ItemSpecModifiers.DefiningProjectFullPath);

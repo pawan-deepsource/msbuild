@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -87,9 +87,7 @@ namespace Microsoft.Build.UnitTests.BackEnd
             {
                 return Task<WorkUnitResult>.FromResult(new WorkUnitResult(WorkUnitResultCode.Canceled, WorkUnitActionCode.Stop, null));
             }
-
-            ProjectOnErrorInstance errorTask = task as ProjectOnErrorInstance;
-            if (errorTask != null)
+            if (task is ProjectOnErrorInstance errorTask)
             {
                 ErrorTasks.Add(errorTask);
             }

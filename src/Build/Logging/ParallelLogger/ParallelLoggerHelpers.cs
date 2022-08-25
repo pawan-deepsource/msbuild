@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -664,8 +664,7 @@ namespace Microsoft.Build.BackEnd.Logging
         #region Equality
         public override bool Equals(object obj)
         {
-            ProjectFullKey compareKey = obj as ProjectFullKey;
-            if (compareKey != null)
+            if (obj is ProjectFullKey compareKey)
             {
                 return (compareKey._projectKey == _projectKey) && (compareKey._entryPointKey == _entryPointKey);
             }

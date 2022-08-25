@@ -68,8 +68,7 @@ namespace Microsoft.Build.BuildEngine
             ErrorUtilities.VerifyThrowArgumentNull(stringComparer, nameof(stringComparer));
 
             this.sharedLock = new object();
-            CopyOnWriteHashtable source = dictionary as CopyOnWriteHashtable;
-            if (source != null)
+            if (dictionary is CopyOnWriteHashtable source)
             {
                 if (source.stringComparer.GetHashCode() == stringComparer.GetHashCode())
                 {

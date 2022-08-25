@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Build.Framework;
@@ -39,23 +39,19 @@ namespace Microsoft.Build.BackEnd.Logging
         {
             _targetLoggingContext = targetLoggingContext;
             _task = task;
-
-            ProjectTaskInstance taskInstance = task as ProjectTaskInstance;
-            if (taskInstance != null)
+            if (task is ProjectTaskInstance taskInstance)
             {
                 _taskName = taskInstance.Name;
             }
             else
             {
-                ProjectPropertyGroupTaskInstance propertyGroupInstance = task as ProjectPropertyGroupTaskInstance;
-                if (propertyGroupInstance != null)
+                if (task is ProjectPropertyGroupTaskInstance propertyGroupInstance)
                 {
                     _taskName = "PropertyGroup";
                 }
                 else
                 {
-                    ProjectItemGroupTaskInstance itemGroupInstance = task as ProjectItemGroupTaskInstance;
-                    if (itemGroupInstance != null)
+                    if (task is ProjectItemGroupTaskInstance itemGroupInstance)
                     {
                         _taskName = "ItemGroup";
                     }
