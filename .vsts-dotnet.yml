@@ -36,6 +36,8 @@ variables:
     value: .NETCore
   - name: _DotNetValidationArtifactsCategory
     value: .NETCoreValidation
+  - name: Codeql.Enabled
+    value: true
 
 stages:
 - stage: build
@@ -122,6 +124,7 @@ stages:
                 /p:TeamName=MSBuild
                 /p:DotNetPublishUsingPipelines=true
                 /p:VisualStudioIbcDrop=$(OptProfDrop)
+                /p:GenerateSbom=true
       displayName: Build
       condition: succeeded()
 
@@ -147,7 +150,7 @@ stages:
         channelName: $(VisualStudio.ChannelName)
         manifests: $(VisualStudio.SetupManifestList)
         outputFolder: '$(Build.SourcesDirectory)\artifacts\VSSetup\$(BuildConfiguration)\Insertion'
-        bootstrapperCoreVersion: 
+        bootstrapperCoreVersion:
       displayName: 'OptProf - Build VS bootstrapper'
       condition: succeeded()
 
@@ -159,6 +162,7 @@ stages:
                   -task VisualStudio.BuildIbcTrainingSettings
                   /p:VisualStudioDropName=$(VisualStudio.DropName)
                   /p:BootstrapperInfoPath=$(Build.StagingDirectory)\MicroBuild\Output\BootstrapperInfo.json
+                  /p:VisualStudioIbcTrainingSettingsPath=$(Build.SourcesDirectory)\eng\config\OptProf.runsettings
       displayName: 'OptProf - Build IBC training settings'
       condition: succeeded()
 
@@ -247,7 +251,7 @@ stages:
     parameters:
       platform:
         name: 'Managed'
-        container: 'mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7-3e800f1-20190501005343'
+        container: 'mcr.microsoft.com/dotnet-buildtools/prereqs:centos-7'
 
   - template: /eng/common/templates/job/publish-build-assets.yml
     parameters:
