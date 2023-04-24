@@ -525,7 +525,7 @@ namespace Microsoft.Build.BuildEngine.Shared
             string projectDirectory
         )
         {
-            bool directoryLastCharIsSeparator = IsDirectorySeparator(projectDirectory[projectDirectory.Length - 1]);
+            bool directoryLastCharIsSeparator = IsDirectorySeparator(projectDirectory[^1]);
             for (int i = 0; i < paths.Length; i++)
             {
                 if (paths[i].StartsWith(projectDirectory, StringComparison.Ordinal))

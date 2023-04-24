@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -702,7 +702,7 @@ namespace Microsoft.Build.Shared
             IEnumerable<string> paths,
             string projectDirectory)
         {
-            bool directoryLastCharIsSeparator = IsDirectorySeparator(projectDirectory[projectDirectory.Length - 1]);
+            bool directoryLastCharIsSeparator = IsDirectorySeparator(projectDirectory[^1]);
             foreach (string path in paths)
             {
                 if (path.StartsWith(projectDirectory, StringComparison.Ordinal))
@@ -1328,7 +1328,7 @@ namespace Microsoft.Build.Shared
         {
             regex.Append(FileSpecRegexParts.FilenameGroupStart);
 
-            bool hasTrailingDot = filename.Length > 0 && filename[filename.Length - 1] == '.';
+            bool hasTrailingDot = filename.Length > 0 && filename[^1]== '.';
             int partLength = hasTrailingDot ? filename.Length - 1 : filename.Length;
 
             for (int i = 0; i < partLength; i++)
@@ -2642,7 +2642,7 @@ namespace Microsoft.Build.Shared
 
             // Ensure that the prefix match wasn't to a distinct directory, so that
             // x\y\prefix doesn't falsely match x\y\prefixmatch.
-            if (directorySeparatorCharacters.Contains(possibleParent[possibleParent.Length - 1]))
+            if (directorySeparatorCharacters.Contains(possibleParent[^1]))
             {
                 return true;
             }

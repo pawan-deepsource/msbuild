@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -188,7 +188,7 @@ namespace Microsoft.Build.CommandLine
                 builder.Append(message);
 
                 // One of the exceptions is missing a period!
-                if (message[message.Length - 1] != '.')
+                if (message[^1]!= '.')
                 {
                     builder.Append('.');
                 }
@@ -2628,15 +2628,15 @@ namespace Microsoft.Build.CommandLine
                 try
                 {
                     // There does not seem to be a localizable function for this
-                    enableNodeReuse = bool.Parse(parameters[parameters.Length - 1]);
+                    enableNodeReuse = bool.Parse(parameters[^1]);
                 }
                 catch (FormatException ex)
                 {
-                    CommandLineSwitchException.Throw("InvalidNodeReuseValue", parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw("InvalidNodeReuseValue", parameters[^1], ex.Message);
                 }
                 catch (ArgumentNullException ex)
                 {
-                    CommandLineSwitchException.Throw("InvalidNodeReuseValue", parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw("InvalidNodeReuseValue", parameters[^1], ex.Message);
                 }
             }
 
@@ -2660,11 +2660,11 @@ namespace Microsoft.Build.CommandLine
             {
                 try
                 {
-                    writer = FileUtilities.OpenWrite(parameters[parameters.Length - 1], append: false);
+                    writer = FileUtilities.OpenWrite(parameters[^1], append: false);
                 }
                 catch (Exception ex) when (ExceptionHandling.IsIoRelatedException(ex))
                 {
-                    CommandLineSwitchException.Throw("InvalidPreprocessPath", parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw("InvalidPreprocessPath", parameters[^1], ex.Message);
                 }
             }
 
@@ -2679,11 +2679,11 @@ namespace Microsoft.Build.CommandLine
             {
                 try
                 {
-                    writer = FileUtilities.OpenWrite(parameters[parameters.Length - 1], append: false);
+                    writer = FileUtilities.OpenWrite(parameters[^1], append: false);
                 }
                 catch (Exception ex) when (ExceptionHandling.IsIoRelatedException(ex))
                 {
-                    CommandLineSwitchException.Throw("TargetsCouldNotBePrinted", parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw("TargetsCouldNotBePrinted", parameters[^1], ex.Message);
                 }
             }
 
@@ -2742,15 +2742,15 @@ namespace Microsoft.Build.CommandLine
             {
                 try
                 {
-                    value = bool.Parse(parameters[parameters.Length - 1]);
+                    value = bool.Parse(parameters[^1]);
                 }
                 catch (FormatException ex)
                 {
-                    CommandLineSwitchException.Throw(resourceName, parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw(resourceName, parameters[^1], ex.Message);
                 }
                 catch (ArgumentNullException ex)
                 {
-                    CommandLineSwitchException.Throw(resourceName, parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw(resourceName, parameters[^1], ex.Message);
                 }
             }
 
@@ -2774,7 +2774,7 @@ namespace Microsoft.Build.CommandLine
             }
 
             enableProfiler = true;
-            var profilerFile = parameters[parameters.Length - 1];
+            var profilerFile = parameters[^1];
 
             // /prof was specified, but don't attach a logger to write a file
             if (profilerFile == "no-file")
@@ -2789,17 +2789,17 @@ namespace Microsoft.Build.CommandLine
             }
             catch (ArgumentException ex)
             {
-                CommandLineSwitchException.Throw("InvalidProfilerValue", parameters[parameters.Length - 1],
+                CommandLineSwitchException.Throw("InvalidProfilerValue", parameters[^1],
                     ex.Message);
             }
             catch (PathTooLongException ex)
             {
-                CommandLineSwitchException.Throw("InvalidProfilerValue", parameters[parameters.Length - 1],
+                CommandLineSwitchException.Throw("InvalidProfilerValue", parameters[^1],
                     ex.Message);
             }
             catch (NotSupportedException ex)
             {
-                CommandLineSwitchException.Throw("InvalidProfilerValue", parameters[parameters.Length - 1],
+                CommandLineSwitchException.Throw("InvalidProfilerValue", parameters[^1],
                     ex.Message);
             }
 
@@ -2922,18 +2922,18 @@ namespace Microsoft.Build.CommandLine
             {
                 try
                 {
-                    cpuCount = int.Parse(parameters[parameters.Length - 1], CultureInfo.InvariantCulture);
+                    cpuCount = int.Parse(parameters[^1], CultureInfo.InvariantCulture);
                 }
                 catch (FormatException ex)
                 {
-                    CommandLineSwitchException.Throw("InvalidMaxCPUCountValue", parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw("InvalidMaxCPUCountValue", parameters[^1], ex.Message);
                 }
                 catch (OverflowException ex)
                 {
-                    CommandLineSwitchException.Throw("InvalidMaxCPUCountValue", parameters[parameters.Length - 1], ex.Message);
+                    CommandLineSwitchException.Throw("InvalidMaxCPUCountValue", parameters[^1], ex.Message);
                 }
 
-                CommandLineSwitchException.VerifyThrow(cpuCount > 0 && cpuCount <= 1024, "InvalidMaxCPUCountValueOutsideRange", parameters[parameters.Length - 1]);
+                CommandLineSwitchException.VerifyThrow(cpuCount > 0 && cpuCount <= 1024, "InvalidMaxCPUCountValueOutsideRange", parameters[^1]);
             }
 
             return cpuCount;
@@ -3174,7 +3174,7 @@ namespace Microsoft.Build.CommandLine
             {
                 // We don't do any validation on the value of the ToolsVersion here, since we don't
                 // know what a valid value looks like.  The engine will take care of this later.
-                return parameters[parameters.Length - 1];
+                return parameters[^1];
             }
 
             return null;
@@ -3240,7 +3240,7 @@ namespace Microsoft.Build.CommandLine
             if (verbositySwitchParameters.Length > 0)
             {
                 // Read the last verbosity switch found
-                originalVerbosity = ProcessVerbositySwitch(verbositySwitchParameters[verbositySwitchParameters.Length - 1]);
+                originalVerbosity = ProcessVerbositySwitch(verbositySwitchParameters[^1]);
                 verbosity = originalVerbosity;
             }
             var loggers = new List<ILogger>();
@@ -3298,7 +3298,7 @@ namespace Microsoft.Build.CommandLine
             string result = anyPrefixingParameter ?? string.Empty;
 
             // Ensure traling ';' so parametersToAggregate are properly separated
-            if (!string.IsNullOrEmpty(result) && result[result.Length - 1] != ';')
+            if (!string.IsNullOrEmpty(result) && result[^1]!= ';')
             {
                 result += ';';
             }
@@ -3374,7 +3374,7 @@ namespace Microsoft.Build.CommandLine
                 return;
             }
 
-            string arguments = binaryLoggerParameters[binaryLoggerParameters.Length - 1];
+            string arguments = binaryLoggerParameters[^1];
 
             BinaryLogger logger = new BinaryLogger { Parameters = arguments };
 

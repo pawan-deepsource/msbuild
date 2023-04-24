@@ -721,7 +721,7 @@ namespace Microsoft.Build.BuildEngine
             // Spaces are not valid property name chars, but $( Foo ) is allowed, and should always expand to BLANK.
             // Do a very fast check for leading and trailing whitespace, and trim them from the property body if we have any.
             // But we will do a property name lookup on the propertyName that we held onto.
-            if (Char.IsWhiteSpace(propertyBody[0]) || Char.IsWhiteSpace(propertyBody[propertyBody.Length - 1]))
+            if (Char.IsWhiteSpace(propertyBody[0]) || Char.IsWhiteSpace(propertyBody[^1]))
             {
                 propertyBody = propertyBody.Trim();
             }

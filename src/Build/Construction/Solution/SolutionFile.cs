@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -1222,7 +1222,7 @@ namespace Microsoft.Build.Construction
             string property)
         {
             // If the incoming string starts and ends with a double-quote, strip the double-quotes.
-            if (!string.IsNullOrEmpty(property) && (property[0] == '"') && (property[property.Length - 1] == '"'))
+            if (!string.IsNullOrEmpty(property) && (property[0] == '"') && (property[^1]== '"'))
             {
                 return property.Substring(1, property.Length - 2);
             }

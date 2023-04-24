@@ -187,7 +187,7 @@ namespace Microsoft.Build.BuildEngine.Shared
                 }
 
                 // write the terminal piece of text after the last transform
-                base.WriteString(surroundingTextPieces[surroundingTextPieces.Length - 1]);
+                base.WriteString(surroundingTextPieces[^1]);
             }
             // if the string has no item vector transforms in it, write it out as usual
             else

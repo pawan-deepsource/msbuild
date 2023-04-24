@@ -1192,8 +1192,8 @@ namespace Microsoft.Build.BuildEngine
             {
                 // Trim the trailing slash if one exists.
                 if (
-                        (aspNetPhysicalPath[aspNetPhysicalPath.Length - 1] == Path.AltDirectorySeparatorChar) ||
-                        (aspNetPhysicalPath[aspNetPhysicalPath.Length - 1] == Path.DirectorySeparatorChar)
+                        (aspNetPhysicalPath[^1]== Path.AltDirectorySeparatorChar) ||
+                        (aspNetPhysicalPath[^1]== Path.DirectorySeparatorChar)
                     )
                 {
                     aspNetPhysicalPath = aspNetPhysicalPath.Substring(0, aspNetPhysicalPath.Length - 1);

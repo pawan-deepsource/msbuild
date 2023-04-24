@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -680,7 +680,7 @@ namespace Microsoft.Build.Execution
                 // Key the dictionary based on Unqualified task names
                 // This is to support partial matches on tasks like Foo.Bar and Baz.Bar
                 string[] nameComponents = taskName.Split('.');
-                string unqualifiedTaskName = nameComponents[nameComponents.Length - 1];
+                string unqualifiedTaskName = nameComponents[^1];
 
                 // Is the task already registered?
                 if (overriddenTasks.TryGetValue(unqualifiedTaskName, out List<RegisteredTaskRecord> recs))

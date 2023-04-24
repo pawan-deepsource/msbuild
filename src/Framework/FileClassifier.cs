@@ -197,7 +197,7 @@ namespace Microsoft.Build.Framework
         {
             if (fileSpec.Length >= 1)
             {
-                char lastChar = fileSpec[fileSpec.Length - 1];
+                char lastChar = fileSpec[^1];
                 if (lastChar != Path.DirectorySeparatorChar && lastChar != Path.AltDirectorySeparatorChar)
                 {
                     fileSpec += Path.DirectorySeparatorChar;

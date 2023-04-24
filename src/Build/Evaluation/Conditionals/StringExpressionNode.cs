@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -86,7 +86,7 @@ namespace Microsoft.Build.Evaluation
                             _cachedExpandedValue = _value;
                             return false;
                         default:
-                            if (_value[1] != '(' || (_value[0] != '$' && _value[0] != '%' && _value[0] != '@') || _value[_value.Length - 1] != ')')
+                            if (_value[1] != '(' || (_value[0] != '$' && _value[0] != '%' && _value[0] != '@') || _value[^1]!= ')')
                             {
                                 // This isn't just a property, item, or metadata value, and it isn't empty.
                                 return false;

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -81,7 +81,7 @@ namespace Microsoft.Build.Evaluation
                 // Is the last character a backslash?
                 if (expandedValue.Length != 0)
                 {
-                    char lastCharacter = expandedValue[expandedValue.Length - 1];
+                    char lastCharacter = expandedValue[^1];
                     // Either back or forward slashes satisfy the function: this is useful for URL's
                     return lastCharacter == Path.DirectorySeparatorChar || lastCharacter == Path.AltDirectorySeparatorChar || lastCharacter == '\\';
                 }

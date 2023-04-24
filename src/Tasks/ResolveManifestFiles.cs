@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -342,7 +342,7 @@ namespace Microsoft.Build.Tasks
             {
                 // Infer culture from path (i.e. "obj\debug\fr\WindowsApplication1.resources.dll" -> "fr")
                 string[] pathSegments = PathUtil.GetPathSegments(item.ItemSpec);
-                itemCulture = pathSegments.Length > 1 ? pathSegments[pathSegments.Length - 2] : null;
+                itemCulture = pathSegments.Length > 1 ? pathSegments[^2]: null;
                 Debug.Assert(!String.IsNullOrEmpty(itemCulture), String.Format(CultureInfo.CurrentCulture, "Satellite item '{0}' is missing expected attribute '{1}'", item.ItemSpec, "Culture"));
                 item.SetMetadata("Culture", itemCulture);
             }
