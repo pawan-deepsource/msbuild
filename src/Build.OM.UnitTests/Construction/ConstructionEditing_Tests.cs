@@ -3230,7 +3230,7 @@ namespace Microsoft.Build.UnitTests.OM.Construction
                     sb.Append(metadataSpace).AppendLine(splits[i]);
                 }
 
-                sb.Append(itemSpace).Append(splits[splits.Length - 1]);
+                sb.Append(itemSpace).Append(splits[^1]);
             }
 
             return sb.ToString();

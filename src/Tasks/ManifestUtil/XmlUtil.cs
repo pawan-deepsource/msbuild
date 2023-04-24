@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -140,7 +140,7 @@ namespace Microsoft.Build.Tasks.Deployment.ManifestUtilities
                     return null;
                 }
 
-                string filename = uri.Segments[uri.Segments.Length - 1];
+                string filename = uri.Segments[^1];
                 Stream s = null;
 
                 // If path is in temp then we immediately know we can skip the first two checks...

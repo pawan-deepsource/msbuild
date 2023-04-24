@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -384,7 +384,7 @@ namespace TaskUsageLogger
 
             // fuzzy match
             string[] parts = name2.Split(s_fullyQualifiedTaskNameSeperators);
-            if (parts.Length > 1 && String.Equals(name1, parts[parts.Length - 1], StringComparison.OrdinalIgnoreCase))
+            if (parts.Length > 1 && String.Equals(name1, parts[^1], StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

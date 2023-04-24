@@ -2121,7 +2121,7 @@ namespace Microsoft.Build.Conversion
             string outputPath = configElement.GetAttribute(VSProjectAttributes.outputPath);
             if (!string.IsNullOrEmpty(outputPath))
             {
-                if (outputPath[outputPath.Length - 1] != Path.DirectorySeparatorChar)
+                if (outputPath[^1]!= Path.DirectorySeparatorChar)
                 {
                     outputPath += Path.DirectorySeparatorChar;
                 }

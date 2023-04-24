@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -173,7 +173,7 @@ namespace Microsoft.Build.Engine.UnitTests
 
                 // Make sure the last wave is disabled.
                 buildSimpleProjectAndValidateChangeWave(testEnvironment: env,
-                                                        versionToCheckAgainstCurrentChangeWave: ChangeWaves.AllWaves[ChangeWaves.AllWaves.Length - 1],
+                                                        versionToCheckAgainstCurrentChangeWave: ChangeWaves.AllWaves[^1],
                                                         currentChangeWaveShouldUltimatelyResolveTo: ChangeWaves.HighestWave,
                                                         warningCodesLogShouldContain: "MSB4272");
             }
@@ -210,7 +210,7 @@ namespace Microsoft.Build.Engine.UnitTests
 
                 // Make sure the last wave is disabled.
                 buildSimpleProjectAndValidateChangeWave(testEnvironment: env,
-                                                        versionToCheckAgainstCurrentChangeWave: ChangeWaves.AllWaves[ChangeWaves.AllWaves.Length - 1],
+                                                        versionToCheckAgainstCurrentChangeWave: ChangeWaves.AllWaves[^1],
                                                         currentChangeWaveShouldUltimatelyResolveTo: ChangeWaves.HighestWave,
                                                         warningCodesLogShouldContain: null);
             }

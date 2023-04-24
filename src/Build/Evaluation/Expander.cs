@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -740,15 +740,15 @@ namespace Microsoft.Build.Evaluation
             {
                 if (argValue.Length > 0)
                 {
-                    if (argValue[0] == '\'' && argValue[argValue.Length - 1] == '\'')
+                    if (argValue[0] == '\'' && argValue[^1]== '\'')
                     {
                         arguments.Add(argValue.Trim(s_singleQuoteChar));
                     }
-                    else if (argValue[0] == '`' && argValue[argValue.Length - 1] == '`')
+                    else if (argValue[0] == '`' && argValue[^1]== '`')
                     {
                         arguments.Add(argValue.Trim(s_backtickChar));
                     }
-                    else if (argValue[0] == '"' && argValue[argValue.Length - 1] == '"')
+                    else if (argValue[0] == '"' && argValue[^1]== '"')
                     {
                         arguments.Add(argValue.Trim(s_doubleQuoteChar));
                     }
@@ -1281,7 +1281,7 @@ namespace Microsoft.Build.Evaluation
                 // Spaces are not valid property name chars, but $( Foo ) is allowed, and should always expand to BLANK.
                 // Do a very fast check for leading and trailing whitespace, and trim them from the property body if we have any.
                 // But we will do a property name lookup on the propertyName that we held onto.
-                if (Char.IsWhiteSpace(propertyBody[0]) || Char.IsWhiteSpace(propertyBody[propertyBody.Length - 1]))
+                if (Char.IsWhiteSpace(propertyBody[0]) || Char.IsWhiteSpace(propertyBody[^1]))
                 {
                     propertyBody = propertyBody.Trim();
                 }

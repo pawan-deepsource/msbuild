@@ -979,7 +979,7 @@ namespace Microsoft.Build.BuildEngine.Shared
             )
         {
             // If the incoming string starts and ends with a double-quote, strip the double-quotes.
-            if (!string.IsNullOrEmpty(property) && (property[0] == '"') && (property[property.Length - 1] == '"'))
+            if (!string.IsNullOrEmpty(property) && (property[0] == '"') && (property[^1]== '"'))
             {
                 return property.Substring(1, property.Length - 2);
             }

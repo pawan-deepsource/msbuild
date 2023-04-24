@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -462,7 +462,7 @@ namespace Microsoft.Build.Evaluation
             }
 
             // Take off %( and )
-            if (expression.Length > 3 && expression[0] == '%' && expression[1] == '(' && expression[expression.Length - 1] == ')')
+            if (expression.Length > 3 && expression[0] == '%' && expression[1] == '(' && expression[^1]== ')')
             {
                 expression = expression.Substring(2, expression.Length - 1 - 2);
             }

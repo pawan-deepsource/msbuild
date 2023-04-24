@@ -568,7 +568,7 @@ namespace Microsoft.Build.BuildEngine.Shared
         internal static bool EndsWithSlash(string fileSpec)
         {
             return (fileSpec.Length > 0)
-                ? IsSlash(fileSpec[fileSpec.Length - 1])
+                ? IsSlash(fileSpec[^1])
                 : false;
         }
 

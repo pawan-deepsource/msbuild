@@ -80,7 +80,7 @@ namespace Microsoft.Build.BuildEngine
                 // Is the last character a backslash?
                 if (expandedValue.Length != 0)
                 {
-                    char lastCharacter = expandedValue[expandedValue.Length - 1];
+                    char lastCharacter = expandedValue[^1];
                     // Either back or forward slashes satisfy the function: this is useful for URL's
                     return lastCharacter == Path.DirectorySeparatorChar || lastCharacter == Path.AltDirectorySeparatorChar;
                 }

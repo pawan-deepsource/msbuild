@@ -52,7 +52,7 @@ namespace Microsoft.Build.Framework
         {
             get
             {
-                return AllWaves[AllWaves.Length - 1];
+                return AllWaves[^1];
             }
         }
 

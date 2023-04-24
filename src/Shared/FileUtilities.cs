@@ -219,7 +219,7 @@ namespace Microsoft.Build.Shared
         internal static string EnsureTrailingSlash(string fileSpec)
         {
             fileSpec = FixFilePath(fileSpec);
-            if (fileSpec.Length > 0 && !IsSlash(fileSpec[fileSpec.Length - 1]))
+            if (fileSpec.Length > 0 && !IsSlash(fileSpec[^1]))
             {
                 fileSpec += Path.DirectorySeparatorChar;
             }
@@ -313,12 +313,12 @@ namespace Microsoft.Build.Shared
             if (!string.IsNullOrEmpty(path))
             {
                 // Special case: convert the quotes.
-                if (path.Length > 1 && path[0] == convertQuote && path[path.Length - 1] == convertQuote)
+                if (path.Length > 1 && path[0] == convertQuote && path[^1]== convertQuote)
                 {
                     path = $"{targetQuote}{path.Substring(1, path.Length - 2)}{targetQuote}";
                 }
                 // Enclose the path in a set of the 'target' quote unless the string is already quoted with the 'target' quotes.
-                else if (path.Length == 1 || path[0] != targetQuote || path[path.Length - 1] != targetQuote)
+                else if (path.Length == 1 || path[0] != targetQuote || path[^1]!= targetQuote)
                 {
                     path = $"{targetQuote}{path}{targetQuote}";
                 }
@@ -335,7 +335,7 @@ namespace Microsoft.Build.Shared
         internal static bool EndsWithSlash(string fileSpec)
         {
             return (fileSpec.Length > 0)
-                ? IsSlash(fileSpec[fileSpec.Length - 1])
+                ? IsSlash(fileSpec[^1])
                 : false;
         }
 
@@ -1176,7 +1176,7 @@ namespace Microsoft.Build.Shared
                 sb.Append(splitPath[i]).Append(Path.DirectorySeparatorChar);
             }
 
-            if (fullPath[fullPath.Length - 1] != Path.DirectorySeparatorChar)
+            if (fullPath[^1]!= Path.DirectorySeparatorChar)
             {
                 sb.Length--;
             }
