@@ -1479,9 +1479,7 @@ namespace Microsoft.Build.UnitTests
                 Assert.True(project.Build(logger));
 
                 var expectedTaskId = logger.TaskStartedEvents.First(t => t.TaskName == "MSBuild").BuildEventContext.TaskId;
-                var actualTaskId = logger.ProjectStartedEvents
-                    .Where(p => p.ParentProjectBuildEventContext?.TaskId > 0)
-                    .First()
+                var actualTaskId = logger.ProjectStartedEvents.First(p => p.ParentProjectBuildEventContext?.TaskId > 0)
                     .ParentProjectBuildEventContext.TaskId;
 
                 Assert.Equal(expectedTaskId, actualTaskId);
@@ -1515,9 +1513,7 @@ namespace Microsoft.Build.UnitTests
                 Assert.True(project.Build(logger));
 
                 var expectedTaskId = logger.TaskStartedEvents.First(t => t.TaskName == nameof(BuildProjectFileTask)).BuildEventContext.TaskId;
-                var actualTaskId = logger.ProjectStartedEvents
-                    .Where(p => p.ParentProjectBuildEventContext?.TaskId > 0)
-                    .First()
+                var actualTaskId = logger.ProjectStartedEvents.First(p => p.ParentProjectBuildEventContext?.TaskId > 0)
                     .ParentProjectBuildEventContext.TaskId;
 
                 Assert.Equal(expectedTaskId, actualTaskId);

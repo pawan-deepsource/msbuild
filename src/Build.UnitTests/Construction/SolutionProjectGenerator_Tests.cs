@@ -1489,44 +1489,28 @@ EndGlobal
             Assert.Single(instances[0].Targets.Where(target => String.Equals(target.Value.Name, "Rebuild", StringComparison.OrdinalIgnoreCase)));
             Assert.Single(instances[0].Targets.Where(target => String.Equals(target.Value.Name, "Publish", StringComparison.OrdinalIgnoreCase)));
 
-            ProjectTargetInstance buildTarget = instances[0].Targets.Where(target => String.Equals(target.Value.Name, "Build", StringComparison.OrdinalIgnoreCase)).First().Value;
-            ProjectTargetInstance cleanTarget = instances[0].Targets.Where(target => String.Equals(target.Value.Name, "Clean", StringComparison.OrdinalIgnoreCase)).First().Value;
-            ProjectTargetInstance rebuildTarget = instances[0].Targets.Where(target => String.Equals(target.Value.Name, "Rebuild", StringComparison.OrdinalIgnoreCase)).First().Value;
-            ProjectTargetInstance publishTarget = instances[0].Targets.Where(target => String.Equals(target.Value.Name, "Publish", StringComparison.OrdinalIgnoreCase)).First().Value;
+            ProjectTargetInstance buildTarget = instances[0].Targets.First(target => String.Equals(target.Value.Name, "Build", StringComparison.OrdinalIgnoreCase)).Value;
+            ProjectTargetInstance cleanTarget = instances[0].Targets.First(target => String.Equals(target.Value.Name, "Clean", StringComparison.OrdinalIgnoreCase)).Value;
+            ProjectTargetInstance rebuildTarget = instances[0].Targets.First(target => String.Equals(target.Value.Name, "Rebuild", StringComparison.OrdinalIgnoreCase)).Value;
+            ProjectTargetInstance publishTarget = instances[0].Targets.First(target => String.Equals(target.Value.Name, "Publish", StringComparison.OrdinalIgnoreCase)).Value;
 
             // Check that the appropriate target is being passed to the child projects
-            Assert.Null(buildTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Targets"));
+            Assert.Null(buildTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Targets"));
 
-            Assert.Equal("Clean", cleanTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Targets"));
+            Assert.Equal("Clean", cleanTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Targets"));
 
-            Assert.Equal("Rebuild", rebuildTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Targets"));
+            Assert.Equal("Rebuild", rebuildTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Targets"));
 
-            Assert.Equal("Publish", publishTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Targets"));
+            Assert.Equal("Publish", publishTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Targets"));
 
             // Check that the child projects in question are the members of the "ProjectReference" item group
-            Assert.Equal("@(ProjectReference)", buildTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Projects"));
+            Assert.Equal("@(ProjectReference)", buildTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Projects"));
 
-            Assert.Equal("@(ProjectReference->Reverse())", cleanTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Projects"));
+            Assert.Equal("@(ProjectReference->Reverse())", cleanTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Projects"));
 
-            Assert.Equal("@(ProjectReference)", rebuildTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Projects"));
+            Assert.Equal("@(ProjectReference)", rebuildTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Projects"));
 
-            Assert.Equal("@(ProjectReference)", publishTarget.Tasks.Where(
-                task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase))
-                .First().GetParameter("Projects"));
+            Assert.Equal("@(ProjectReference)", publishTarget.Tasks.First(task => String.Equals(task.Name, "MSBuild", StringComparison.OrdinalIgnoreCase)).GetParameter("Projects"));
 
             // We should have only the four standard targets plus the two validation targets (ValidateSolutionConfiguration and ValidateToolsVersions).
         }

@@ -32,7 +32,7 @@ namespace Microsoft.Build.UnitTests.OM.Definition
   </ItemGroup>
 </Project>");
 
-            ProjectItem item = project.GetItems("I").Where(i => i.UnevaluatedInclude == "X").First();
+            ProjectItem item = project.GetItems("I").First(i => i.UnevaluatedInclude == "X");
             item.ItemType = "J";
 
             string expected =
@@ -66,7 +66,7 @@ namespace Microsoft.Build.UnitTests.OM.Definition
   </ItemGroup>
 </Project>");
 
-            ProjectItem item = project.GetItems("I").Where(i => i.EvaluatedInclude == "Y").First();
+            ProjectItem item = project.GetItems("I").First(i => i.EvaluatedInclude == "Y");
             project.RemoveItem(item);
 
             string expected =
@@ -95,7 +95,7 @@ namespace Microsoft.Build.UnitTests.OM.Definition
   </ItemGroup>
 </Project>");
 
-            ProjectItem item = project.GetItems("I").Where(i => i.EvaluatedInclude == "Y").First();
+            ProjectItem item = project.GetItems("I").First(i => i.EvaluatedInclude == "Y");
             item.Rename("Z");
 
             string expected =
@@ -134,10 +134,10 @@ namespace Microsoft.Build.UnitTests.OM.Definition
   </ItemGroup>
 </Project>");
 
-            ProjectItem item1 = project.GetItems("I").Where(i => i.EvaluatedInclude == "X").First();
+            ProjectItem item1 = project.GetItems("I").First(i => i.EvaluatedInclude == "X");
             Assert.Equal("A;B;C", item1.GetMetadataValue("M")); // "Invalid metadata at start"
 
-            ProjectItem item2 = project.GetItems("I").Where(i => i.EvaluatedInclude == "Y").First();
+            ProjectItem item2 = project.GetItems("I").First(i => i.EvaluatedInclude == "Y");
             Assert.Equal("A;D", item2.GetMetadataValue("M")); // "Invalid metadata at start"
 
             item1.RemoveMetadata("M");
@@ -185,7 +185,7 @@ namespace Microsoft.Build.UnitTests.OM.Definition
   </ItemGroup>
 </Project>");
 
-            ProjectItem item1 = project.GetItems("I").Where(i => i.EvaluatedInclude == "X").First();
+            ProjectItem item1 = project.GetItems("I").First(i => i.EvaluatedInclude == "X");
             item1.RemoveMetadata("M");
 
             string expected =
@@ -207,9 +207,9 @@ namespace Microsoft.Build.UnitTests.OM.Definition
             Helpers.VerifyAssertProjectContent(expected, project.Xml, false);
 
             project.ReevaluateIfNecessary();
-            item1 = project.GetItems("I").Where(i => i.EvaluatedInclude == "X").First();
+            item1 = project.GetItems("I").First(i => i.EvaluatedInclude == "X");
             Assert.Equal("A;B", item1.GetMetadataValue("M")); // "Invalid metadata after first removal"
-            ProjectItem item2 = project.GetItems("I").Where(i => i.EvaluatedInclude == "Y").First();
+            ProjectItem item2 = project.GetItems("I").First(i => i.EvaluatedInclude == "Y");
             Assert.Equal("A;D", item2.GetMetadataValue("M")); // "Invalid metadata after first removal"
         }
 
@@ -237,11 +237,11 @@ namespace Microsoft.Build.UnitTests.OM.Definition
   </ItemGroup>
 </Project>");
 
-            ProjectItem item1 = project.GetItems("I").Where(i => i.EvaluatedInclude == "X").First();
+            ProjectItem item1 = project.GetItems("I").First(i => i.EvaluatedInclude == "X");
             item1.RemoveMetadata("M");
 
             project.ReevaluateIfNecessary();
-            ProjectItem item2 = project.GetItems("I").Where(i => i.EvaluatedInclude == "Y").First();
+            ProjectItem item2 = project.GetItems("I").First(i => i.EvaluatedInclude == "Y");
             item2.RemoveMetadata("M");
 
             string expected =
@@ -261,9 +261,9 @@ namespace Microsoft.Build.UnitTests.OM.Definition
             Helpers.VerifyAssertProjectContent(expected, project.Xml, false);
 
             project.ReevaluateIfNecessary();
-            item1 = project.GetItems("I").Where(i => i.EvaluatedInclude == "X").First();
+            item1 = project.GetItems("I").First(i => i.EvaluatedInclude == "X");
             Assert.Equal("A;B", item1.GetMetadataValue("M")); // "Invalid metadata after second removal"
-            item2 = project.GetItems("I").Where(i => i.EvaluatedInclude == "Y").First();
+            item2 = project.GetItems("I").First(i => i.EvaluatedInclude == "Y");
             Assert.Equal("A", item2.GetMetadataValue("M")); // "Invalid metadata after second removal"
         }
 
