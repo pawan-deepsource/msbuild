@@ -21,7 +21,7 @@ namespace Microsoft.Build.Tasks
     /// <summary>
     /// A task that copies files.
     /// </summary>
-    public class Copy : TaskExtension, ICancelableTask
+    public class Copy : TaskExtension, IIncrementalTask, ICancelableTask
     {
         internal const string AlwaysRetryEnvVar = "MSBUILDALWAYSRETRY";
         internal const string AlwaysOverwriteReadOnlyFilesEnvVar = "MSBUILDALWAYSOVERWRITEREADONLYFILES";
@@ -153,6 +153,8 @@ namespace Microsoft.Build.Tasks
         /// </summary>
         public bool OverwriteReadOnlyFiles { get; set; }
 
+        public bool FailIfNotIncremental { get; set; }
+
         #endregion
 
         /// <summary>
@@ -223,8 +225,8 @@ namespace Microsoft.Build.Tasks
         /// </summary>
         /// <returns>Return true to indicate success, return false to indicate failure and NO retry, return NULL to indicate retry.</returns>
         private bool? CopyFileWithLogging(
-            FileState sourceFileState,      // The source file
-            FileState destinationFileState)  // The destination file
+            FileState sourceFileState,
+            FileState destinationFileState)
         {
             if (destinationFileState.DirectoryExists)
             {
@@ -254,8 +256,16 @@ namespace Microsoft.Build.Tasks
             {
                 if (!FileSystems.Default.DirectoryExists(destinationFolder))
                 {
-                    Log.LogMessage(MessageImportance.Normal, CreatesDirectory, destinationFolder);
-                    Directory.CreateDirectory(destinationFolder);
+                    if (FailIfNotIncremental)
+                    {
+                        Log.LogError(CreatesDirectory, destinationFolder);
+                        return false;
+                    }
+                    else
+                    {
+                        Log.LogMessage(MessageImportance.Normal, CreatesDirectory, destinationFolder);
+                        Directory.CreateDirectory(destinationFolder);
+                    }
                 }
 
                 // It's very common for a lot of files to be copied to the same folder. 
@@ -264,15 +274,18 @@ namespace Microsoft.Build.Tasks
                 _directoriesKnownToExist.TryAdd(destinationFolder, true);
             }
 
+            if (FailIfNotIncremental)
+            {
+                Log.LogError(FileComment, sourceFileState.FileNameFullPath, destinationFileState.FileNameFullPath);
+                return false;
+            }
+
             if (OverwriteReadOnlyFiles)
             {
                 MakeFileWriteable(destinationFileState, true);
             }
 
-            // If the destination file is a hard or symbolic link, File.Copy would overwrite the source.
-            // To prevent this, we need to delete the existing entry before we Copy or create a link.
-            // We could try to figure out if the file is a link, but I can't think of a reason to not simply delete it always.
-            if (ChangeWaves.AreFeaturesEnabled(ChangeWaves.Wave17_6) && destinationFileState.FileExists && !destinationFileState.IsReadOnly)
+            if (ChangeWaves.AreFeaturesEnabled(ChangeWaves.Wave17_8) && destinationFileState.FileExists && !destinationFileState.IsReadOnly)
             {
                 FileUtilities.DeleteNoThrow(destinationFileState.Name);
             }
@@ -290,11 +303,11 @@ namespace Microsoft.Build.Tasks
                     if (UseSymboliclinksIfPossible)
                     {
                         // This is a message for fallback to SymbolicLinks if HardLinks fail when UseHardlinksIfPossible and UseSymboliclinksIfPossible are true
-                        Log.LogMessage(MessageImportance.Normal, RetryingAsSymbolicLink, sourceFileState.Name, destinationFileState.Name, errorMessage);
+                        Log.LogMessage(MessageImportance.Normal, RetryingAsSymbolicLink, sourceFileState.FileNameFullPath, destinationFileState.FileNameFullPath, errorMessage);
                     }
                     else
                     {
-                        Log.LogMessage(MessageImportance.Normal, RetryingAsFileCopy, sourceFileState.Name, destinationFileState.Name, errorMessage);
+                        Log.LogMessage(MessageImportance.Normal, RetryingAsFileCopy, sourceFileState.FileNameFullPath, destinationFileState.FileNameFullPath, errorMessage);
                     }
                 }
             }
@@ -310,13 +323,13 @@ namespace Microsoft.Build.Tasks
                         errorMessage = Log.FormatResourceString("Copy.NonWindowsLinkErrorMessage", "symlink()", errorMessage);
                     }
 
-                    Log.LogMessage(MessageImportance.Normal, RetryingAsFileCopy, sourceFileState.Name, destinationFileState.Name, errorMessage);
+                    Log.LogMessage(MessageImportance.Normal, RetryingAsFileCopy, sourceFileState.FileNameFullPath, destinationFileState.FileNameFullPath, errorMessage);
                 }
             }
 
             if (ErrorIfLinkFails && !hardLinkCreated && !symbolicLinkCreated)
             {
-                Log.LogErrorWithCodeFromResources("Copy.LinkFailed", sourceFileState.Name, destinationFileState.Name);
+                Log.LogErrorWithCodeFromResources("Copy.LinkFailed", sourceFileState.FileNameFullPath, destinationFileState.FileNameFullPath);
                 return false;
             }
 
@@ -325,20 +338,18 @@ namespace Microsoft.Build.Tasks
             if (!hardLinkCreated && !symbolicLinkCreated)
             {
                 // Do not log a fake command line as well, as it's superfluous, and also potentially expensive
-                string sourceFilePath = FileUtilities.GetFullPathNoThrow(sourceFileState.Name);
-                string destinationFilePath = FileUtilities.GetFullPathNoThrow(destinationFileState.Name);
-                Log.LogMessage(MessageImportance.Normal, FileComment, sourceFilePath, destinationFilePath);
+                Log.LogMessage(MessageImportance.Normal, FileComment, sourceFileState.FileNameFullPath, destinationFileState.FileNameFullPath);
 
                 File.Copy(sourceFileState.Name, destinationFileState.Name, true);
+            }
 
-                // If the destinationFile file exists, then make sure it's read-write.
-                // The File.Copy command copies attributes, but our copy needs to
-                // leave the file writeable.
-                if (sourceFileState.IsReadOnly)
-                {
-                    destinationFileState.Reset();
-                    MakeFileWriteable(destinationFileState, false);
-                }
+            // If the destinationFile file exists, then make sure it's read-write.
+            // The File.Copy command copies attributes, but our copy needs to
+            // leave the file writeable.
+            if (sourceFileState.IsReadOnly)
+            {
+                destinationFileState.Reset();
+                MakeFileWriteable(destinationFileState, false);
             }
 
             // Files were successfully copied or linked. Those are equivalent here.
@@ -733,16 +744,19 @@ namespace Microsoft.Build.Tasks
                         "true");
                     MSBuildEventSource.Log.CopyUpToDateStop(destinationFileState.Name, true);
                 }
-                // We only do the cheap check for identicalness here, we try the more expensive check
-                // of comparing the fullpaths of source and destination to see if they are identical,
-                // in the exception handler lower down.
-                else if (!String.Equals(
-                             sourceFileState.Name,
-                             destinationFileState.Name,
-                             StringComparison.OrdinalIgnoreCase))
+                else if (!PathsAreIdentical(sourceFileState, destinationFileState))
                 {
                     MSBuildEventSource.Log.CopyUpToDateStop(destinationFileState.Name, false);
-                    success = DoCopyWithRetries(sourceFileState, destinationFileState, copyFile);
+
+                    if (FailIfNotIncremental)
+                    {
+                        Log.LogError(FileComment, sourceFileState.Name, destinationFileState.Name);
+                        success = false;
+                    }
+                    else
+                    {
+                        success = DoCopyWithRetries(sourceFileState, destinationFileState, copyFile);
+                    }
                 }
                 else
                 {
@@ -821,7 +835,7 @@ namespace Microsoft.Build.Tasks
                             }
                             else if (code == NativeMethods.ERROR_INVALID_FILENAME)
                             {
-                                // Invalid characters used in file name, no point retrying.
+                                // Invalid characters used in file name; no point retrying.
                                 throw;
                             }
 
@@ -837,13 +851,6 @@ namespace Microsoft.Build.Tasks
                                 throw;
                             }
 
-                            // if this was just because the source and destination files are the
-                            // same file, that's not a failure.
-                            // Note -- we check this exceptional case here, not before the copy, for perf.
-                            if (PathsAreIdentical(sourceFileState.Name, destinationFileState.Name))
-                            {
-                                return true;
-                            }
                             break;
                     }
 
@@ -941,12 +948,16 @@ namespace Microsoft.Build.Tasks
         /// Compares two paths to see if they refer to the same file. We can't solve the general
         /// canonicalization problem, so we just compare strings on the full paths.
         /// </summary>
-        private static bool PathsAreIdentical(string source, string destination)
+        private static bool PathsAreIdentical(FileState source, FileState destination)
         {
-            string fullSourcePath = Path.GetFullPath(source);
-            string fullDestinationPath = Path.GetFullPath(destination);
-            StringComparison filenameComparison = NativeMethodsShared.IsWindows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-            return String.Equals(fullSourcePath, fullDestinationPath, filenameComparison);
+            if (string.Equals(source.Name, destination.Name, FileUtilities.PathComparison))
+            {
+                return true;
+            }
+
+            source.FileNameFullPath = Path.GetFullPath(source.Name);
+            destination.FileNameFullPath = Path.GetFullPath(destination.Name);
+            return string.Equals(source.FileNameFullPath, destination.FileNameFullPath, FileUtilities.PathComparison);
         }
 
         private static int GetParallelismFromEnvironment()

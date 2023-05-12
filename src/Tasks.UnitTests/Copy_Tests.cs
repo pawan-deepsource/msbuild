@@ -129,6 +129,165 @@ namespace Microsoft.Build.UnitTests
         }
 
         /// <summary>
+        /// Question should not copy any files.
+        /// </summary>
+        [Fact]
+        public void QuestionCopyFile()
+        {
+            string source = FileUtilities.GetTemporaryFile();
+            string destination = FileUtilities.GetTemporaryFile(null, ".tmp", false);
+            string content = "This is a source file.";
+
+            try
+            {
+                using (StreamWriter sw = FileUtilities.OpenWrite(source, true))
+                {
+                    sw.Write(content);
+                }
+
+                ITaskItem sourceItem = new TaskItem(source);
+                ITaskItem destinationItem = new TaskItem(destination);
+                ITaskItem[] sourceFiles = { sourceItem };
+                ITaskItem[] destinationFiles = { destinationItem };
+
+                CopyMonitor m = new CopyMonitor();
+                Copy t = new Copy
+                {
+                    RetryDelayMilliseconds = 1,  // speed up tests!
+                    BuildEngine = new MockEngine(_testOutputHelper),
+                    SourceFiles = sourceFiles,
+                    DestinationFiles = destinationFiles,
+                    UseHardlinksIfPossible = UseHardLinks,
+                    UseSymboliclinksIfPossible = UseSymbolicLinks,
+                    FailIfNotIncremental = true,
+                };
+
+                Assert.False(t.Execute(m.CopyFile, _parallelismThreadCount));
+
+                // Expect for there to have been no copies.
+                Assert.Equal(0, m.copyCount);
+
+                Assert.False(FileUtilities.FileExistsNoThrow(destination));
+            }
+            finally
+            {
+                File.Delete(source);
+            }
+        }
+
+        /// <summary>
+        /// Question copy should not error if copy did no work.
+        /// </summary>
+        [Fact]
+        public void QuestionCopyFileSameContent()
+        {
+            string source = FileUtilities.GetTemporaryFile();
+            string destination = FileUtilities.GetTemporaryFile();
+            string content = "This is a source file.";
+            DateTime testTime = DateTime.Now;
+
+            try
+            {
+                using (StreamWriter sw = FileUtilities.OpenWrite(source, true))
+                {
+                    sw.Write(content);
+                }
+
+                using (StreamWriter sw = FileUtilities.OpenWrite(destination, true))
+                {
+                    sw.Write(content);
+                }
+
+                FileInfo sourcefi = new FileInfo(source);
+                sourcefi.LastWriteTimeUtc = testTime;
+
+                FileInfo destinationfi = new FileInfo(destination);
+                destinationfi.LastWriteTimeUtc = testTime;
+
+                ITaskItem sourceItem = new TaskItem(source);
+                ITaskItem destinationItem = new TaskItem(destination);
+                ITaskItem[] sourceFiles = { sourceItem };
+                ITaskItem[] destinationFiles = { destinationItem };
+
+                CopyMonitor m = new CopyMonitor();
+                Copy t = new Copy
+                {
+                    RetryDelayMilliseconds = 1,  // speed up tests!
+                    BuildEngine = new MockEngine(_testOutputHelper),
+                    SourceFiles = sourceFiles,
+                    DestinationFiles = destinationFiles,
+                    UseHardlinksIfPossible = UseHardLinks,
+                    UseSymboliclinksIfPossible = UseSymbolicLinks,
+                    SkipUnchangedFiles = true,
+                    FailIfNotIncremental = true,
+                };
+                Assert.True(t.Execute(m.CopyFile, _parallelismThreadCount));
+
+                // Expect for there to have been no copies.
+                Assert.Equal(0, m.copyCount);
+
+                ((MockEngine)t.BuildEngine).AssertLogDoesntContain("MSB3026"); // Didn't do retries
+            }
+            finally
+            {
+                File.Delete(source);
+                File.Delete(destination);
+            }
+        }
+
+        /// <summary>
+        /// Question copy should error if a copy will occur.
+        /// </summary>
+        [Fact]
+        public void QuestionCopyFileNotSameContent()
+        {
+            string source = FileUtilities.GetTemporaryFile();
+            string destination = FileUtilities.GetTemporaryFile();
+            try
+            {
+                using (StreamWriter sw = FileUtilities.OpenWrite(source, true))
+                {
+                    sw.Write("This is a source file.");
+                }
+
+                using (StreamWriter sw = FileUtilities.OpenWrite(destination, true))
+                {
+                    sw.Write("This is a destination file.");
+                }
+
+                ITaskItem sourceItem = new TaskItem(source);
+                ITaskItem destinationItem = new TaskItem(destination);
+                ITaskItem[] sourceFiles = { sourceItem };
+                ITaskItem[] destinationFiles = { destinationItem };
+
+                CopyMonitor m = new CopyMonitor();
+                Copy t = new Copy
+                {
+                    RetryDelayMilliseconds = 1,  // speed up tests!
+                    BuildEngine = new MockEngine(_testOutputHelper),
+                    SourceFiles = sourceFiles,
+                    DestinationFiles = destinationFiles,
+                    UseHardlinksIfPossible = UseHardLinks,
+                    UseSymboliclinksIfPossible = UseSymbolicLinks,
+                    SkipUnchangedFiles = true,
+                    FailIfNotIncremental = true,
+                };
+
+                Assert.False(t.Execute(m.CopyFile, _parallelismThreadCount));
+
+                // Expect for there to have been no copies.
+                Assert.Equal(0, m.copyCount);
+
+                ((MockEngine)t.BuildEngine).AssertLogDoesntContain("MSB3026"); // Didn't do retries
+            }
+            finally
+            {
+                File.Delete(source);
+                File.Delete(destination);
+            }
+        }
+
+        /// <summary>
         /// Unless ignore readonly attributes is set, we should not copy over readonly files.
         /// </summary>
         [Fact]
@@ -2109,73 +2268,68 @@ namespace Microsoft.Build.UnitTests
         [InlineData(true, false)]
         public void DoNotCorruptSourceOfLink(bool useHardLink, bool useSymbolicLink)
         {
-            string sourceFile1 = FileUtilities.GetTemporaryFile();
-            string sourceFile2 = FileUtilities.GetTemporaryFile();
-            string temp = Path.GetTempPath();
-            string destFolder = Path.Combine(temp, "2A333ED756AF4dc392E728D0F864A398");
-            string destFile = Path.Combine(destFolder, "The Destination");
+            using TestEnvironment env = TestEnvironment.Create();
+            TransientTestFile sourceFile1 = env.CreateFile("source1.tmp", "This is the first source temp file."); // HIGHCHAR: Test writes in UTF8 without preamble.
+            TransientTestFile sourceFile2 = env.CreateFile("source2.tmp", "This is the second source temp file."); // HIGHCHAR: Test writes in UTF8 without preamble.
+            TransientTestFolder destFolder = env.CreateFolder(createFolder: false);
+            string destFile = Path.Combine(destFolder.Path, "The Destination");
 
-            try
+            // Don't create the dest folder, let task do that
+            ITaskItem[] sourceFiles = { new TaskItem(sourceFile1.Path) };
+            ITaskItem[] destinationFiles = { new TaskItem(destFile) };
+
+            var me = new MockEngine(true);
+            var t = new Copy
             {
-                File.WriteAllText(sourceFile1, "This is the first source temp file."); // HIGHCHAR: Test writes in UTF8 without preamble.
-                File.WriteAllText(sourceFile2, "This is the second source temp file."); // HIGHCHAR: Test writes in UTF8 without preamble.
+                RetryDelayMilliseconds = 1, // speed up tests!
+                BuildEngine = me,
+                SourceFiles = sourceFiles,
+                DestinationFiles = destinationFiles,
+                SkipUnchangedFiles = true,
+                UseHardlinksIfPossible = useHardLink,
+                UseSymboliclinksIfPossible = useSymbolicLink,
+            };
 
-                // Don't create the dest folder, let task do that
+            t.Execute().ShouldBeTrue();
+            File.Exists(destFile).ShouldBeTrue();
+            File.ReadAllText(destFile).ShouldBe("This is the first source temp file.");
 
-                ITaskItem[] sourceFiles = { new TaskItem(sourceFile1) };
-                ITaskItem[] destinationFiles = { new TaskItem(destFile) };
+            sourceFiles = new TaskItem[] { new TaskItem(sourceFile2.Path) };
 
-                var me = new MockEngine(true);
-                var t = new Copy
-                {
-                    RetryDelayMilliseconds = 1, // speed up tests!
-                    BuildEngine = me,
-                    SourceFiles = sourceFiles,
-                    DestinationFiles = destinationFiles,
-                    SkipUnchangedFiles = true,
-                    UseHardlinksIfPossible = useHardLink,
-                    UseSymboliclinksIfPossible = useSymbolicLink,
-                };
-
-                bool success = t.Execute();
-
-                Assert.True(success); // "success"
-                Assert.True(File.Exists(destFile)); // "destination exists"
-
-                string destinationFileContents = File.ReadAllText(destFile);
-                Assert.Equal("This is the first source temp file.", destinationFileContents);
-
-                sourceFiles = new TaskItem[] { new TaskItem(sourceFile2) };
-
-                t = new Copy
-                {
-                    RetryDelayMilliseconds = 1, // speed up tests!
-                    BuildEngine = me,
-                    SourceFiles = sourceFiles,
-                    DestinationFiles = destinationFiles,
-                    SkipUnchangedFiles = true,
-                    UseHardlinksIfPossible = false,
-                    UseSymboliclinksIfPossible = false,
-                };
-
-                success = t.Execute();
-
-                Assert.True(success); // "success"
-                Assert.True(File.Exists(destFile)); // "destination exists"
-
-                destinationFileContents = File.ReadAllText(destFile);
-                Assert.Equal("This is the second source temp file.", destinationFileContents);
-
-                // Read the source file (it should not have been overwritten)
-                string sourceFileContents = File.ReadAllText(sourceFile1);
-                Assert.Equal("This is the first source temp file.", sourceFileContents);
-
-                ((MockEngine)t.BuildEngine).AssertLogDoesntContain("MSB3026"); // Didn't do retries
-            }
-            finally
+            t = new Copy
             {
-                Helpers.DeleteFiles(sourceFile1, sourceFile2, destFile);
-            }
+                RetryDelayMilliseconds = 1, // speed up tests!
+                BuildEngine = me,
+                SourceFiles = sourceFiles,
+                DestinationFiles = destinationFiles,
+                SkipUnchangedFiles = true,
+                UseHardlinksIfPossible = false,
+                UseSymboliclinksIfPossible = false,
+            };
+
+            t.Execute().ShouldBeTrue();
+            File.Exists(destFile).ShouldBeTrue();
+            File.ReadAllText(destFile).ShouldBe("This is the second source temp file.");
+
+            // Read the source file (it should not have been overwritten)
+            File.ReadAllText(sourceFile1.Path).ShouldBe("This is the first source temp file.");
+            ((MockEngine)t.BuildEngine).AssertLogDoesntContain("MSB3026"); // Didn't do retries
+
+            destinationFiles = new TaskItem[] { new TaskItem(
+                Path.Combine(Path.GetDirectoryName(sourceFile2.Path), ".", Path.GetFileName(sourceFile2.Path))) // sourceFile2.Path with a "." inserted before the file name
+            };
+
+            t = new Copy
+            {
+                RetryDelayMilliseconds = 1, // speed up tests!
+                BuildEngine = me,
+                SourceFiles = sourceFiles,
+                DestinationFiles = destinationFiles,
+                SkipUnchangedFiles = true,
+            };
+
+            t.Execute().ShouldBeTrue();
+            File.Exists(sourceFile2.Path).ShouldBeTrue();
         }
     }
 
