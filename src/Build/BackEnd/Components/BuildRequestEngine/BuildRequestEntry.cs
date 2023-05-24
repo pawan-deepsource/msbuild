@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -511,10 +511,7 @@ namespace Microsoft.Build.BackEnd
                     ErrorUtilities.VerifyThrow(addToIssueList, "Requests with unresolved configurations should always be added to the issue list.");
                     _unresolvedConfigurations ??= new Dictionary<int, List<BuildRequest>>();
 
-                    if (!_unresolvedConfigurations.ContainsKey(newRequest.ConfigurationId))
-                    {
-                        _unresolvedConfigurations.Add(newRequest.ConfigurationId, new List<BuildRequest>());
-                    }
+                    _unresolvedConfigurations.TryAdd(newRequest.ConfigurationId, new List<BuildRequest>());
 
                     _unresolvedConfigurations[newRequest.ConfigurationId].Add(newRequest);
                 }

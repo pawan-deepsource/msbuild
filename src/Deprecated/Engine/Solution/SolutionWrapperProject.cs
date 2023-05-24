@@ -2257,10 +2257,7 @@ namespace Microsoft.Build.BuildEngine
                 // no dependencies.
                 project.DependencyLevel = maxDependencyLevel;
 
-                if (!projectsByDependencyLevel.ContainsKey(maxDependencyLevel))
-                {
-                    projectsByDependencyLevel.Add(maxDependencyLevel, new List<ProjectInSolution>());
-                }
+                projectsByDependencyLevel.TryAdd(maxDependencyLevel, new List<ProjectInSolution>());
 
                 projectsByDependencyLevel[maxDependencyLevel].Add(project);
             }

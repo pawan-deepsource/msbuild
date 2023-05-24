@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -1039,10 +1039,7 @@ namespace Microsoft.Build.Tasks
                     {
                         foreach (KeyValuePair<string, string> kvp in _sdkManifest.FrameworkIdentities)
                         {
-                            if (!FrameworkIdentitiesFromManifest.ContainsKey(kvp.Key))
-                            {
-                                FrameworkIdentitiesFromManifest.Add(kvp.Key, kvp.Value);
-                            }
+                            FrameworkIdentitiesFromManifest.TryAdd(kvp.Key, kvp.Value);
                         }
                     }
 
@@ -1056,10 +1053,7 @@ namespace Microsoft.Build.Tasks
                     {
                         foreach (KeyValuePair<string, string> kvp in _sdkManifest.AppxLocations)
                         {
-                            if (!AppxLocationsFromManifest.ContainsKey(kvp.Key))
-                            {
-                                AppxLocationsFromManifest.Add(kvp.Key, kvp.Value);
-                            }
+                            AppxLocationsFromManifest.TryAdd(kvp.Key, kvp.Value);
                         }
                     }
                 }

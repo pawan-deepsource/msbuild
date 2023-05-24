@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #if FEATURE_FILE_TRACKER
@@ -480,10 +480,7 @@ namespace Microsoft.Build.Utilities
                 foreach (string dependee in dependencies.Keys)
                 {
                     // only if we don't have the output already should we add it again
-                    if (!outputs.ContainsKey(dependee))
-                    {
-                        outputs.Add(dependee, new TaskItem(dependee));
-                    }
+                    outputs.TryAdd(dependee, new TaskItem(dependee));
                 }
             }
         }
