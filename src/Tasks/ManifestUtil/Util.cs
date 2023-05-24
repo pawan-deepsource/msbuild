@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -443,10 +443,7 @@ namespace Microsoft.Build.Tasks.Deployment.ManifestUtilities
                     key = Path.GetFullPath(item.ItemSpec).ToUpperInvariant();
                 }
 
-                if (!list.ContainsKey(key))
-                {
-                    list.Add(key, item);
-                }
+                list.TryAdd(key, item);
             }
 
             return list.Values.ToArray();

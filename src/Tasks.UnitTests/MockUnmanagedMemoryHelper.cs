@@ -44,10 +44,7 @@ namespace Microsoft.Build.UnitTests
             // If this is a dependent allocation, add it to the list of dependencies
             if (_mainAllocationHandle != IntPtr.Zero)
             {
-                if (!_dependentAllocations.ContainsKey(_mainAllocationHandle))
-                {
-                    _dependentAllocations.Add(_mainAllocationHandle, new List<IntPtr>());
-                }
+                _dependentAllocations.TryAdd(_mainAllocationHandle, new List<IntPtr>());
 
                 _dependentAllocations[_mainAllocationHandle].Add(handle);
             }

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -860,10 +860,7 @@ namespace Microsoft.Build.Tasks
                 // Add to map with full name, for SpecificVersion=true case
                 string key = fusionName.ToLowerInvariant();
                 Debug.Assert(!_dictionary.ContainsKey(key), String.Format(CultureInfo.CurrentCulture, "Two or more items with same key '{0}' detected", key));
-                if (!_dictionary.ContainsKey(key))
-                {
-                    _dictionary.Add(key, entry);
-                }
+                _dictionary.TryAdd(key, entry);
 
                 // Also add to map with simple name, for SpecificVersion=false case
                 int i = fusionName.IndexOf(',');
@@ -872,10 +869,7 @@ namespace Microsoft.Build.Tasks
                     string simpleName = fusionName.Substring(0, i); // example: "ClassLibrary1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" -> "ClassLibrary1"
                     key = simpleName.ToLowerInvariant();
                     // If there are multiple with same simple name then we'll take the first one and ignore the rest, which is not an unreasonable thing to do
-                    if (!_simpleNameDictionary.ContainsKey(key))
-                    {
-                        _simpleNameDictionary.Add(key, entry);
-                    }
+                    _simpleNameDictionary.TryAdd(key, entry);
                 }
             }
 
@@ -919,10 +913,7 @@ namespace Microsoft.Build.Tasks
                     // Use satellite assembly strong name signature as key
                     string key = identity.ToString();
                     Debug.Assert(!_dictionary.ContainsKey(key), String.Format(CultureInfo.CurrentCulture, "Two or more items with same key '{0}' detected", key));
-                    if (!_dictionary.ContainsKey(key))
-                    {
-                        _dictionary.Add(key, entry);
-                    }
+                    _dictionary.TryAdd(key, entry);
                 }
             }
 
@@ -961,10 +952,7 @@ namespace Microsoft.Build.Tasks
                 string key = targetPath.ToLowerInvariant();
                 Debug.Assert(!_dictionary.ContainsKey(key), String.Format(CultureInfo.CurrentCulture, "Two or more items with same '{0}' attribute detected", ItemMetadataNames.targetPath));
                 var entry = new MapEntry(item, includedByDefault);
-                if (!_dictionary.ContainsKey(key))
-                {
-                    _dictionary.Add(key, entry);
-                }
+                _dictionary.TryAdd(key, entry);
             }
 
             IEnumerator IEnumerable.GetEnumerator()

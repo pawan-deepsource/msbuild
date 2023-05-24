@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #if FEATURE_FILE_TRACKER
@@ -690,10 +690,7 @@ namespace Microsoft.Build.Utilities
                                         {
                                             foreach (ITaskItem file in _sourceFiles)
                                             {
-                                                if (!primaryFiles.ContainsKey(FileUtilities.NormalizePath(file.ItemSpec)))
-                                                {
-                                                    primaryFiles.Add(FileUtilities.NormalizePath(file.ItemSpec), null);
-                                                }
+                                                primaryFiles.TryAdd(FileUtilities.NormalizePath(file.ItemSpec), null);
                                             }
                                         }
                                         else

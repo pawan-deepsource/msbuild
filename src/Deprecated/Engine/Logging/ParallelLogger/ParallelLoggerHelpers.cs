@@ -89,10 +89,7 @@ namespace Microsoft.Build.BuildEngine
         /// </summary>
         internal void AddTargetStartedEvent(TargetStartedEventArgs e)
         {
-            if (!targetStartedEvents.ContainsKey(e.BuildEventContext))
-            {
-                targetStartedEvents.Add(e.BuildEventContext, new TargetStartedEventMinimumFields(e));
-            }
+            targetStartedEvents.TryAdd(e.BuildEventContext, new TargetStartedEventMinimumFields(e));
         }
 
         /// <summary>
