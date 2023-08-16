@@ -308,6 +308,7 @@ namespace Microsoft.Build.Execution
             _nextUnnamedProjectId = 1;
             _componentFactories = new BuildComponentFactoryCollection(this);
             _componentFactories.RegisterDefaultFactories();
+            SerializationContractInitializer.Initialize();
             _projectStartedEvents = new Dictionary<int, BuildEventArgs>();
 
             _projectStartedEventHandler = OnProjectStarted;
@@ -336,13 +337,13 @@ namespace Microsoft.Build.Execution
             Idle,
 
             /// <summary>
-            /// This is the state the BuildManager is in after <see cref="BeginBuild(BuildParameters)"/> has been called but before <see cref="EndBuild"/> has been called.
-            /// <see cref="BuildManager.PendBuildRequest(Microsoft.Build.Execution.BuildRequestData)"/>, <see cref="BuildManager.BuildRequest(Microsoft.Build.Execution.BuildRequestData)"/>, <see cref="BuildManager.PendBuildRequest(GraphBuildRequestData)"/>, <see cref="BuildManager.BuildRequest(GraphBuildRequestData)"/>, and <see cref="BuildManager.EndBuild"/> may be called in this state.
+            /// This is the state the BuildManager is in after <see cref="BeginBuild(BuildParameters)"/> has been called but before <see cref="EndBuild()"/> has been called.
+            /// <see cref="BuildManager.PendBuildRequest(Microsoft.Build.Execution.BuildRequestData)"/>, <see cref="BuildManager.BuildRequest(Microsoft.Build.Execution.BuildRequestData)"/>, <see cref="BuildManager.PendBuildRequest(GraphBuildRequestData)"/>, <see cref="BuildManager.BuildRequest(GraphBuildRequestData)"/>, and <see cref="BuildManager.EndBuild()"/> may be called in this state.
             /// </summary>
             Building,
 
             /// <summary>
-            /// This is the state the BuildManager is in after <see cref="BuildManager.EndBuild"/> has been called but before all existing submissions have completed.
+            /// This is the state the BuildManager is in after <see cref="BuildManager.EndBuild()"/> has been called but before all existing submissions have completed.
             /// </summary>
             WaitingForBuildToComplete
         }
@@ -2467,7 +2468,6 @@ namespace Microsoft.Build.Execution
                     // shut down.
                     submission.CompleteLogging();
 
-                    _overallBuildSuccess = _overallBuildSuccess && (submission.BuildResult.OverallResult == BuildResultCode.Success);
                     CheckSubmissionCompletenessAndRemove(submission);
                 }
 
@@ -2481,7 +2481,6 @@ namespace Microsoft.Build.Execution
 
                     submission.CompleteResults(new GraphBuildResult(submission.SubmissionId, new BuildAbortedException()));
 
-                    _overallBuildSuccess &= submission.BuildResult.OverallResult == BuildResultCode.Success;
                     CheckSubmissionCompletenessAndRemove(submission);
                 }
 
@@ -2593,8 +2592,6 @@ namespace Microsoft.Build.Execution
 
                     submission.CompleteResults(result);
 
-                    _overallBuildSuccess = _overallBuildSuccess && (_buildSubmissions[result.SubmissionId].BuildResult.OverallResult == BuildResultCode.Success);
-
                     CheckSubmissionCompletenessAndRemove(submission);
                 }
             }
@@ -2612,8 +2609,6 @@ namespace Microsoft.Build.Execution
                 {
                     submission.CompleteResults(result);
 
-                    _overallBuildSuccess &= submission.BuildResult.OverallResult == BuildResultCode.Success;
-
                     CheckSubmissionCompletenessAndRemove(submission);
                 }
             }
@@ -2629,6 +2624,7 @@ namespace Microsoft.Build.Execution
                 // If the submission has completed or never started, remove it.
                 if (submission.IsCompleted || submission.BuildRequest == null)
                 {
+                    _overallBuildSuccess &= (submission.BuildResult?.OverallResult == BuildResultCode.Success);
                     _buildSubmissions.Remove(submission.SubmissionId);
 
                     // Clear all cached SDKs for the submission
@@ -2649,6 +2645,7 @@ namespace Microsoft.Build.Execution
                 // If the submission has completed or never started, remove it.
                 if (submission.IsCompleted || !submission.IsStarted)
                 {
+                    _overallBuildSuccess &= submission.BuildResult?.OverallResult == BuildResultCode.Success;
                     _graphBuildSubmissions.Remove(submission.SubmissionId);
 
                     // Clear all cached SDKs for the submission
