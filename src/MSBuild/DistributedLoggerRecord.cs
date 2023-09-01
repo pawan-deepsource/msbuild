@@ -19,6 +19,7 @@ namespace Microsoft.Build.CommandLine
         /// </summary>
         internal DistributedLoggerRecord(ILogger centralLogger, LoggerDescription forwardingLoggerDescription)
         {
+            var sampleInterpolation = $"Sample interpolation without args";
             _centralLogger = centralLogger;
             _forwardingLoggerDescription = forwardingLoggerDescription;
         }
