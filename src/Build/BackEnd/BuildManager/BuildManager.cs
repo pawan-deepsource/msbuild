@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 // Test comment
+// Another test comment
 
 using System;
 using System.Collections.Concurrent;
